@@ -1,0 +1,53 @@
+{% extends 'facts/base.html' %}
+{% load humanize %}
+
+{% block content %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#categoriesCollapse">
+                Категории фактов
+            </button>
+            
+            <div class="collapse mt-2" id="categoriesCollapse">
+                <div class="d-flex flex-wrap">
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary category-btn">
+                        Все факты
+                    </a>
+                    {% for category in categories %}
+                        <a href="{% url 'category_facts' category.slug %}" 
+                           class="btn btn-outline-secondary category-btn {% if current_category and current_category.id == category.id %}active{% endif %}">
+                            {{ category.name }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        {% for fact in facts %}
+            <div class="col-md-6 col-lg-4" id="fact-{{ fact.id }}">
+                <div class="card fact-card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ fact.title }}</h5>
+                        <p class="card-text">{{ fact.content }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-secondary">{{ fact.category.name }}</span>
+                            <div>
+                                <button id="like-btn-{{ fact.id }}" 
+                                        onclick="likeFact({{ fact.id }})"
+                                        class="btn btn-sm {% if user in fact.likes.all %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                                    ❤️ <span id="like-count-{{ fact.id }}">{{ fact.likes.count|intcomma }}</span>
+                                </button>
+                                <button onclick="shareFact({{ fact.id }})" 
+                                        class="btn btn-sm btn-outline-secondary share-btn">
+                                    Поделиться
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}
